@@ -95,12 +95,19 @@
 
     See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and Data Flow Linearization by Borrello et al.
 ** Our Approach
-
-   All of the above approaches require the entire source code to be available beforehand. This is not necessarily true in applications such as the Web, where code is available at run-time. Furthermore, many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program, thus not providing guarantees on code being side-channel free. Thus, we propose a runtime semantics that takes care by expanding on techniques used in dynamic Information Flow Control.
+   All of the above approaches require the entire *source code* to be available beforehand. This is not necessarily true in applications such as the Web, where code may be available only *during execution*. Furthermore, many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program, thus not providing *guarantees* on the code being side-channel free. \pause Thus, we propose a *runtime semantics* that takes care by expanding on techniques used in *dynamic Information Flow Control*. Furthermore, we *prove* that our semantics has the desired properties within the *Rocq theorem prover*.
 * Fall-Through Semantics for Mitigating Timing-Based Side Channel leaks
 ** The WHILE Language
-   [[file:./WHILE.png]]
-** Further Notation
+   $\mu := \cdot ~\arrowvert ~ \mu, x \Rightarrow n^k$
+
+   \pause
+   
+   $e := n ~\arrowvert ~x ~\arrowvert ~ e_1 \oplus ~e_2$
+
+   \pause
+
+   $c := \textsf{skip} ~\arrowvert ~x:=e  ~\arrowvert ~c_1;c_2 ~\arrowvert ~\textsf{if} ~e ~\textsf{then} ~c_1 ~\textsf{else} ~c_2 ~\arrowvert ~\textsf{while} ~e ~\textsf{do} ~c$
+   
 ** Judgements
 *** Expression Judgement                                               :B_block:
     :PROPERTIES:
@@ -108,6 +115,7 @@
     :END:
     \[e ~\arrowvert ~\mu \Downarrow_{pc} T, n^{k} \]
 
+    An expression given some store /\mu/ and some evaluation level /pc/, evaluates to some primitive value /n/ along with some label /k/, within time /T/.
 *** Command Judgement(s)                                               :B_block:
     :PROPERTIES:
     :BEAMER_env: block
@@ -115,15 +123,72 @@
     :END:
 
     \[c ~\arrowvert ~\mu \Downarrow_{pc} T ~\arrowvert ~\mu'  ~ ~ ~ ~ ~ \textsf{debranch}(c, n, \ell) ~\arrowvert ~\mu \Downarrow_{pc} T ~\arrowvert ~\mu' \]
+
+    A command given some store /mu/, and evaluation level /pc/ produces a store /\mu'/ in time /T/.
+** Dynamic IFC
+   Let us imagine there are variables /x/ and /y/, where /x/ holds some sensitive data and /y/ does not. There are 3 kinds of leaks that could happen. \pause
+*** Direct Flow                                                      :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :END:
+    \(x:=y\)
+    \pause
+*** Indirect Flow                                                    :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :END:
+    \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~y:=1 \)
+    \pause
+*** Side Channel                                                     :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :END:
+    \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~\{y:=1; ~y:=1\} \)
     
-** Explicit and Implicit Flow
 ** Threat Model
+   Thus, given an adversary that can execute the program under security label \ell. \pause
+*** Data Security       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    The adversary can view the state of the memory, but values that are high relative to \ell are invisible. \pause
+    As an example, let us take \(L \sqsubseteq M \sqsubseteq H\) and let us take \(\ell = M\).
+
+    Let us say our /\mu/ is /x \rightarrow true^{L}, y \rightarrow true^{M}, z \rightarrow true^{H}/, then the adversary's view of the memory is: \pause
+
+    /x \rightarrow true^{L}, y \rightarrow true^{M}, z \rightarrow */
+    \pause
+*** Timing Security       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
 ** Expression Semantics
+   [[file:./expr.png]]
 ** Command Semantics
-** Debranch Semantics
+*** The Basics       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    [[file:./basics_c.png]]
+    \pause
+*** IF-HIGH       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    [[file:./ifhigh_c.png]]
+** Debranch Semantics: The Basics
+    [[file:./basics_d.png]] 
+** Debranch Semantics: IFs
+    [[file:./ifs.png]]
 * (Formal) Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks
 ** Rocq, Rocq, Correct!
-** Threat Model, Revisited
-** Join Semi-lattice
+   We choose to prove our theorems and formalise our semantics within the *Rocq* (formerly Coq) theorem prover.
+** PartialOrder
+    #+ATTR_LATEX: width=\textwidth
+   [[file:./partial_order.png]]
+** Join Semi-Lattice
+   [[file:./join.png]]
 ** Observational Equivalence
 ** Timing Sensitive Non-Interference
+** Threat Model, Revisited
