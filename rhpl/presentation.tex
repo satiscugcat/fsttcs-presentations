@@ -1,4 +1,4 @@
-% Created 2025-12-16 Tue 15:05
+% Created 2025-12-16 Tue 15:08
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -31,8 +31,8 @@
 \end{frame}
 
 \section{Fall-Through Semantics for Mitigating Timing-based Side Channel Leaks}
-\label{sec:org4c7d4b8}
-\begin{frame}[label={sec:org195457d},fragile]{An Illustrative Example}
+\label{sec:orgdcfbebf}
+\begin{frame}[label={sec:orgdc66c47},fragile]{An Illustrative Example}
  Let us consider a C program that checks some input against a given password by comparing it by character by character.
 \begin{verbatim}
 bool matchpwd ( int * input , size_t n ) {
@@ -44,9 +44,9 @@ bool matchpwd ( int * input , size_t n ) {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:orgd41a268}]{An Exploit}
+\begin{frame}[label={sec:orga2cb9bf}]{An Exploit}
 Let's say the password is \alert{101010}, an exploit may look like the following.
-\begin{example}[An Attack Trace]\label{sec:org6e68a89}
+\begin{example}[An Attack Trace]\label{sec:org63f2a38}
 000000 \dotfill Rejected in 1\textsuperscript{st} iteration \pause \\
 \alert{10}0000 \dotfill Rejected in 3\textsuperscript{rd} iteration \pause \\
 \alert{1}10000 \dotfill Rejected in 2\textsuperscript{nd} iteration \pause \\
@@ -55,7 +55,7 @@ Let's say the password is \alert{101010}, an exploit may look like the following
 \alert{101010} \dotfill Password accepted!
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:orgcef002d}]{Threat Model}
+\begin{frame}[label={sec:orgdeaf483}]{Threat Model}
 Thus, given an adversary that can execute the program under security label \(\ell\). \pause
 \begin{block}{Data Security}
 The adversary can view the state of the memory, but values that are high relative to \(\ell\) are invisible. \pause
@@ -70,12 +70,12 @@ Let us say our \emph{\(\mu\)} is \emph{x \(\rightarrow\) true\textsuperscript{L}
 The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orgcf3daff}]{Expression Semantics}
+\begin{frame}[label={sec:orge9b3397}]{Expression Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./expr.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org5eb9c7e}]{Command Semantics}
+\begin{frame}[label={sec:org5230c2e}]{Command Semantics}
 \begin{block}{The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_c.png}
@@ -88,19 +88,19 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \end{center}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orga8a81af}]{Debranch Semantics: The Basics}
+\begin{frame}[label={sec:org5577bba}]{Debranch Semantics: The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_d.png}
 \end{center} 
 \end{frame}
-\begin{frame}[label={sec:org6f6b864}]{Debranch Semantics: IFs}
+\begin{frame}[label={sec:org2571dd6}]{Debranch Semantics: IFs}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./ifs.png}
 \end{center}
 \end{frame}
 \section{Interactive Theorem Proving - What's the Fuss About?}
-\label{sec:org0e0cb69}
-\begin{frame}[label={sec:orgc7c8d3c}]{ITPs}
+\label{sec:orgf720f19}
+\begin{frame}[label={sec:orga9e3abe}]{ITPs}
 \alert{Interactive Theorem Provers} have been around for quite a while. However, they have been facing a lot of very \emph{recent} adoption.
 \begin{itemize}
 \item LEAN4 (2013)
@@ -110,12 +110,12 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \item Automath (1967)
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgf88ca47}]{Expressing Mathematical Structures}
+\begin{frame}[label={sec:orgd3fbbba}]{Expressing Mathematical Structures}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./simple.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org0bc349f}]{Why Bother?}
+\begin{frame}[label={sec:orga109190}]{Why Bother?}
 The most important thing that we get from these systems is \alert{trust}.
 \begin{itemize}
 \item \alert{Manual verification} can be error-prone and time-consuming.
@@ -124,32 +124,32 @@ The most important thing that we get from these systems is \alert{trust}.
 \end{itemize}
 \end{frame}
 \section{Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks}
-\label{sec:orgfea8fb5}
-\begin{frame}[label={sec:org6ccde10}]{Expressing Grammars}
+\label{sec:org9b0fbcc}
+\begin{frame}[label={sec:org525750a}]{Expressing Grammars}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./grammar.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org380c01e}]{Expressing Semantics}
+\begin{frame}[label={sec:org7d5397e}]{Expressing Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./semantics.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org6bd5574}]{Expressing Invariants}
+\begin{frame}[label={sec:orga1df3d8}]{Expressing Invariants}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./invariant.png}
 \end{center}
 \end{frame}
 \section{Interactive Theorem Proving - An Undegraduate Perspective}
-\label{sec:orgf200376}
-\begin{frame}[label={sec:orgf924c9f}]{Why Did I Bother?}
+\label{sec:org21d52dc}
+\begin{frame}[label={sec:org90ea190}]{Why Did I Bother?}
 \begin{itemize}
 \item I started working on this project during the first semester of my second year. I was taking Discrete Math \alert{at the same time}! \pause
 \item During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
 \item After this, I got extremely anxious about my \alert{proofs and theorems being incorrect}.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org615d508}]{Learning to write Rocq vs Learning to write Proofs}
+\begin{frame}[label={sec:orgf35d82c}]{Learning to write Rocq vs Learning to write Proofs}
 \begin{block}{Learning Rocq}
 \begin{itemize}
 \item \alert{Well documented} and maintained by a team of highly qualified researchers/engineers. \pause
@@ -165,20 +165,20 @@ The most important thing that we get from these systems is \alert{trust}.
 \end{itemize}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org7085e4f}]{Intuition}
+\begin{frame}[label={sec:org617a8ab}]{Intuition}
 Intuition plays a big role in proofs. \pause Take for example the pumping lemma for context free grammars. \pause
 \begin{center}
 \includegraphics[width=.9\linewidth]{./sipser.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org72af0d2}]{Intuition in ITPs}
+\begin{frame}[label={sec:orged51274}]{Intuition in ITPs}
 \begin{itemize}
 \item There is \alert{almost no room} for intuition in ITPs. \pause
 \item This is bad. Spending time on things obvious by intuition, may hamper the \alert{non-obvious} things. \pause
 \item This is good. It allows for stronger guarantees. \pause \alert{As a student, by default, your intuition is non-existent or bad.}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org21a9e64}]{Costs and Caveats}
+\begin{frame}[label={sec:orga66ea96}]{Costs and Caveats}
 \pause
 \begin{itemize}
 \item Error in \alert{specification}. \pause

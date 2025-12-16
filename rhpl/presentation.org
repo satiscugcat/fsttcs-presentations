@@ -108,11 +108,17 @@
    + During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
    + After this, I got extremely anxious about my *proofs and theorems being incorrect*.
 ** Learning to write Rocq vs Learning to write Proofs
-*** Learning Rocq
+*** Learning Rocq       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
     + *Well documented* and maintained by a team of highly qualified researchers/engineers. \pause
     + Wonderful widely available resources for learning *(Software Foundations)*. \pause
     + At the end of the day, it is a programming language! Possibility of *transfer*. \pause
-*** Learning Proofs
+*** Learning Proofs       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
     + Universally accepted resources do not exist (as far as I know). \pause
     + Discrete Math courses often focus on *already existing/well-studied structures*. \pause But (from what I know), not as much work in *defining and using your own*. \pause
     + Learning by example is difficult: "The proof is trivial", or "The proof follows simply from induction on /x/". 
