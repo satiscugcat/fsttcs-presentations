@@ -95,7 +95,9 @@
 
     See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and Data Flow Linearization by Borrello et al.
 ** Our Approach
-   All of the above approaches require the entire *source code* to be available beforehand. This is not necessarily true in applications such as the Web, where code may be available only *during execution*. Furthermore, many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program, thus not providing *guarantees* on the code being side-channel free. \pause Thus, we propose a *runtime semantics* that takes care by expanding on techniques used in *dynamic Information Flow Control*. Furthermore, we *prove* that our semantics has the desired properties within the *Rocq theorem prover*.
+   + All of the above approaches require the entire *source code* to be available beforehand. This is *not always possible*.\pause
+   + Many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program. \pause
+   + Thus, we propose a *runtime semantics* that takes care by expanding on techniques used in *dynamic Information Flow Control*. \pause Furthermore, we *prove* that our semantics has the desired properties within the *Rocq theorem prover*.
 * Fall-Through Semantics for Mitigating Timing-Based Side Channel leaks
 ** The WHILE Language
    $\mu := \cdot ~\arrowvert ~ \mu, x \Rightarrow n^k$
@@ -126,12 +128,12 @@
 
     A command given some store /mu/, and evaluation level /pc/ produces a store /\mu'/ in time /T/.
 ** Dynamic IFC
-   Let us imagine there are variables /x/ and /y/, where /x/ holds some sensitive data and /y/ does not. There are 3 kinds of leaks that could happen. \pause
+   Let us imagine there are variables /x/ and /y/, where /x/ is hidden and holds some sensitive data and /y/ does not. There are 3 kinds of leaks that could happen. \pause
 *** Direct Flow                                                      :B_example:
     :PROPERTIES:
     :BEAMER_env: example
     :END:
-    \(x:=y\)
+    \(y:=x\)
     \pause
 *** Indirect Flow                                                    :B_example:
     :PROPERTIES:
@@ -180,7 +182,7 @@
 ** Debranch Semantics: The Basics
     [[file:./basics_d.png]] 
 ** Debranch Semantics: IFs
-    [[file:./ifs.png]]
+   [[file:./ifs.png]]
 * (Formal) Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks
 ** Rocq, Rocq, Correct!
    We choose to prove our theorems and formalise our semantics within the *Rocq* (formerly Coq) theorem prover.
@@ -189,6 +191,18 @@
    [[file:./partial_order.png]]
 ** Join Semi-Lattice
    [[file:./join.png]]
+** Expressing Grammars
+   [[file:./grammar.png]]
+** Expressing Semantics
+   [[file:./semantics.png]]
+** Expressing Invariants
+   [[file:./invariant.png]]
+
 ** Observational Equivalence
+   [[file:./obseq.png]]
 ** Timing Sensitive Non-Interference
-** Threat Model, Revisited
+   [[file:./timsec.png]]
+** Soundness
+   [[file:./sound.png]]
+** Partial Completeness
+   [[file:./pcomplete.png]]

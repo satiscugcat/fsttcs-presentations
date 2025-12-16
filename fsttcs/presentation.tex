@@ -1,4 +1,4 @@
-% Created 2025-12-15 Mon 14:40
+% Created 2025-12-16 Tue 15:36
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -31,14 +31,14 @@
 \end{frame}
 
 \section{Timing-Based Side Channel Leaks}
-\label{sec:org65c67d9}
-\begin{frame}[label={sec:org202d280}]{Traditional Cybersecurity}
+\label{sec:org1fb28e6}
+\begin{frame}[label={sec:org2a5830b}]{Traditional Cybersecurity}
 Traditionally, cybersecurity has dealt with the analysis of \alert{overt} channels.
 \begin{center}
 \includegraphics[width=.9\linewidth]{./alice_bob.jpg}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org97b6b31}]{What are Side Channels?}
+\begin{frame}[label={sec:orgd264b44}]{What are Side Channels?}
 A \emph{side} channel, on the other hand, involves no such direct access. Instead, vulnerabilities are introduced by \alert{side effects} of a program's execution.
 \pause
 \begin{itemize}
@@ -53,7 +53,7 @@ A \emph{side} channel, on the other hand, involves no such direct access. Instea
 \item \alert{Time it takes for the program to execute}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgfa2d4df},fragile]{An Illustrative Example}
+\begin{frame}[label={sec:orgb7933ce},fragile]{An Illustrative Example}
  Let us consider a C program that checks some input against a given password by comparing it by character by character.
 \begin{verbatim}
 bool matchpwd ( int * input , size_t n ) {
@@ -65,9 +65,9 @@ bool matchpwd ( int * input , size_t n ) {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:org1a4d294}]{An Exploit}
+\begin{frame}[label={sec:org837623b}]{An Exploit}
 Let's say the password is \alert{101010}, an exploit may look like the following.
-\begin{example}[An Attack Trace]\label{sec:org2de9a63}
+\begin{example}[An Attack Trace]\label{sec:org1fbba7a}
 000000 \dotfill Rejected in 1\textsuperscript{st} iteration \pause \\
 \alert{10}0000 \dotfill Rejected in 3\textsuperscript{rd} iteration \pause \\
 \alert{1}10000 \dotfill Rejected in 2\textsuperscript{nd} iteration \pause \\
@@ -76,20 +76,20 @@ Let's say the password is \alert{101010}, an exploit may look like the following
 \alert{101010} \dotfill Password accepted!
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:orgc51790a}]{The Reality of Timing Side Channels}
+\begin{frame}[label={sec:org449cd93}]{The Reality of Timing Side Channels}
 Speculative execution and cache side channels are subtler ways that these vulnerabilities can be introduced.
 \begin{center}
 \includegraphics[width=.9\linewidth]{spooky.png}
 \end{center}
 \end{frame}
 \section{Mitigating Timing-Based Side Channel Leaks}
-\label{sec:orga97e23a}
-\begin{frame}[label={sec:orgbeee162}]{Dummy Code Insertion}
+\label{sec:org393bc22}
+\begin{frame}[label={sec:orgdd509cf}]{Dummy Code Insertion}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./agat.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org00f7430},fragile]{Constant Time Programming}
+\begin{frame}[label={sec:orgcc40f62},fragile]{Constant Time Programming}
  \begin{block}{Constant Time Program}
 \begin{verbatim}
 bool equals(byte a[], size_t a_len, byte b[], size_t b_len) {
@@ -106,7 +106,7 @@ Separately, work has been done on ensuring the preservation of this invariant.
 See: Formal verification of a constant-time preserving C compiler by Barthe et. al.   
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org561f53b}]{Code Generation}
+\begin{frame}[label={sec:org3acf89f}]{Code Generation}
 \begin{block}{Program Repair}
 Work has been done in linearising the source code of a program.
 
@@ -118,12 +118,16 @@ Similarly, work has also been done at generating constant time code given a non 
 See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and Data Flow Linearization by Borrello et al.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orgd7d9753}]{Our Approach}
-All of the above approaches require the entire \alert{source code} to be available beforehand. This is not necessarily true in applications such as the Web, where code may be available only \alert{during execution}. Furthermore, many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program, thus not providing \alert{guarantees} on the code being side-channel free. \pause Thus, we propose a \alert{runtime semantics} that takes care by expanding on techniques used in \alert{dynamic Information Flow Control}. Furthermore, we \alert{prove} that our semantics has the desired properties within the \alert{Rocq theorem prover}.
+\begin{frame}[label={sec:org174fc67}]{Our Approach}
+\begin{itemize}
+\item All of the above approaches require the entire \alert{source code} to be available beforehand. This is \alert{not always possible}.\pause
+\item Many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program. \pause
+\item Thus, we propose a \alert{runtime semantics} that takes care by expanding on techniques used in \alert{dynamic Information Flow Control}. \pause Furthermore, we \alert{prove} that our semantics has the desired properties within the \alert{Rocq theorem prover}.
+\end{itemize}
 \end{frame}
 \section{Fall-Through Semantics for Mitigating Timing-Based Side Channel leaks}
-\label{sec:org4ec2b75}
-\begin{frame}[label={sec:org35870a0}]{The WHILE Language}
+\label{sec:org491766f}
+\begin{frame}[label={sec:orga345d6c}]{The WHILE Language}
 \(\mu := \cdot ~\arrowvert ~ \mu, x \Rightarrow n^k\)
 
 \pause
@@ -134,7 +138,7 @@ All of the above approaches require the entire \alert{source code} to be availab
 
 \(c := \textsf{skip} ~\arrowvert ~x:=e  ~\arrowvert ~c_1;c_2 ~\arrowvert ~\textsf{if} ~e ~\textsf{then} ~c_1 ~\textsf{else} ~c_2 ~\arrowvert ~\textsf{while} ~e ~\textsf{do} ~c\)
 \end{frame}
-\begin{frame}[label={sec:org8e61acf}]{Judgements}
+\begin{frame}[label={sec:orga80a180}]{Judgements}
 \begin{block}{Expression Judgement}
 \[e ~\arrowvert ~\mu \Downarrow_{pc} T, n^{k} \]
 
@@ -146,21 +150,21 @@ An expression given some store \emph{\(\mu\)} and some evaluation level \emph{pc
 A command given some store \emph{mu}, and evaluation level \emph{pc} produces a store \emph{\(\mu\)'} in time \emph{T}.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org4047210}]{Dynamic IFC}
-Let us imagine there are variables \emph{x} and \emph{y}, where \emph{x} holds some sensitive data and \emph{y} does not. There are 3 kinds of leaks that could happen. \pause
-\begin{example}[Direct Flow]\label{sec:orgf1ef42a}
-\(x:=y\)
+\begin{frame}[label={sec:org73aa06c}]{Dynamic IFC}
+Let us imagine there are variables \emph{x} and \emph{y}, where \emph{x} is hidden and holds some sensitive data and \emph{y} does not. There are 3 kinds of leaks that could happen. \pause
+\begin{example}[Direct Flow]\label{sec:orgf686839}
+\(y:=x\)
 \pause
 \end{example}
-\begin{example}[Indirect Flow]\label{sec:orgacf133a}
+\begin{example}[Indirect Flow]\label{sec:orgdf11b73}
 \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~y:=1\)
 \pause
 \end{example}
-\begin{example}[Side Channel]\label{sec:orgc8ea6e1}
+\begin{example}[Side Channel]\label{sec:orgef809bd}
 \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~\{y:=1; ~y:=1\}\)
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:org1d7001b}]{Threat Model}
+\begin{frame}[label={sec:org8531894}]{Threat Model}
 Thus, given an adversary that can execute the program under security label \(\ell\). \pause
 \begin{block}{Data Security}
 The adversary can view the state of the memory, but values that are high relative to \(\ell\) are invisible. \pause
@@ -175,12 +179,12 @@ Let us say our \emph{\(\mu\)} is \emph{x \(\rightarrow\) true\textsuperscript{L}
 The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orgb6a054d}]{Expression Semantics}
+\begin{frame}[label={sec:org089a1fe}]{Expression Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./expr.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org3ccf4b9}]{Command Semantics}
+\begin{frame}[label={sec:org1008753}]{Command Semantics}
 \begin{block}{The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_c.png}
@@ -193,35 +197,64 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \end{center}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orgb4e6936}]{Debranch Semantics: The Basics}
+\begin{frame}[label={sec:org526263e}]{Debranch Semantics: The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_d.png}
 \end{center} 
 \end{frame}
-\begin{frame}[label={sec:org2b2224d}]{Debranch Semantics: IFs}
+\begin{frame}[label={sec:orge30d63b}]{Debranch Semantics: IFs}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./ifs.png}
 \end{center}
 \end{frame}
 \section{(Formal) Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks}
-\label{sec:orge2e971a}
-\begin{frame}[label={sec:org1e819cf}]{Rocq, Rocq, Correct!}
+\label{sec:org26cb65c}
+\begin{frame}[label={sec:org002f386}]{Rocq, Rocq, Correct!}
 We choose to prove our theorems and formalise our semantics within the \alert{Rocq} (formerly Coq) theorem prover.
 \end{frame}
-\begin{frame}[label={sec:org130ca38}]{PartialOrder}
+\begin{frame}[label={sec:org850f7da}]{PartialOrder}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./partial_order.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orga714e9e}]{Join Semi-Lattice}
+\begin{frame}[label={sec:org7cad8d4}]{Join Semi-Lattice}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./join.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgc776372}]{Observational Equivalence}
+\begin{frame}[label={sec:orgc230a95}]{Expressing Grammars}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./grammar.png}
+\end{center}
 \end{frame}
-\begin{frame}[label={sec:org91d9b32}]{Timing Sensitive Non-Interference}
+\begin{frame}[label={sec:orgfeb3c8a}]{Expressing Semantics}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./semantics.png}
+\end{center}
 \end{frame}
-\begin{frame}[label={sec:orgcd8a4ca}]{Threat Model, Revisited}
+\begin{frame}[label={sec:orge7a11e1}]{Expressing Invariants}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./invariant.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:orgff00bd8}]{Observational Equivalence}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./obseq.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:orgebafb39}]{Timing Sensitive Non-Interference}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./timsec.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org42c8abd}]{Soundness}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./sound.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:orgb5cb718}]{Partial Completeness}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./pcomplete.png}
+\end{center}
 \end{frame}
 \end{document}
