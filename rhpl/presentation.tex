@@ -1,0 +1,190 @@
+% Created 2025-12-16 Tue 15:05
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{Madrid}
+\author{Aniket Mishra, Abhishek Bichhawat}
+\date{\textit{{[}2025-12-18 Thu]}}
+\title{Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks}
+\hypersetup{
+ pdfauthor={Aniket Mishra, Abhishek Bichhawat},
+ pdftitle={Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks},
+ pdfkeywords={beamer org orgmode},
+ pdfsubject={Example of using org to create presentations using the beamer exporter},
+ pdfcreator={Emacs 30.2 (Org mode 9.7.11)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+\section{Fall-Through Semantics for Mitigating Timing-based Side Channel Leaks}
+\label{sec:org4c7d4b8}
+\begin{frame}[label={sec:org195457d},fragile]{An Illustrative Example}
+ Let us consider a C program that checks some input against a given password by comparing it by character by character.
+\begin{verbatim}
+bool matchpwd ( int * input , size_t n ) {
+  if ( n != pwd_length ) return false;
+  for ( int i = 0; i < n ; i ++) {
+    if ( input [ i ] != pwd [ i ]) return false ;
+  }
+  return true ;
+}
+\end{verbatim}
+\end{frame}
+\begin{frame}[label={sec:orgd41a268}]{An Exploit}
+Let's say the password is \alert{101010}, an exploit may look like the following.
+\begin{example}[An Attack Trace]\label{sec:org6e68a89}
+000000 \dotfill Rejected in 1\textsuperscript{st} iteration \pause \\
+\alert{10}0000 \dotfill Rejected in 3\textsuperscript{rd} iteration \pause \\
+\alert{1}10000 \dotfill Rejected in 2\textsuperscript{nd} iteration \pause \\
+\alert{1010}00 \dotfill Rejected in 5\textsuperscript{th} iteration \pause \\
+\alert{101}100 \dotfill Rejected in 4\textsuperscript{th} iteration \pause \\
+\alert{101010} \dotfill Password accepted!
+\end{example}
+\end{frame}
+\begin{frame}[label={sec:orgcef002d}]{Threat Model}
+Thus, given an adversary that can execute the program under security label \(\ell\). \pause
+\begin{block}{Data Security}
+The adversary can view the state of the memory, but values that are high relative to \(\ell\) are invisible. \pause
+As an example, let us take \(L \sqsubseteq M \sqsubseteq H\) and let us take \(\ell = M\).
+
+Let us say our \emph{\(\mu\)} is \emph{x \(\rightarrow\) true\textsuperscript{L}, y \(\rightarrow\) true\textsuperscript{M}, z \(\rightarrow\) true\textsuperscript{H}}, then the adversary's view of the memory is: \pause
+
+\emph{x \(\rightarrow\) true\textsuperscript{L}, y \(\rightarrow\) true\textsuperscript{M}, z \(\rightarrow\) *}
+\pause
+\end{block}
+\begin{block}{Timing Security}
+The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
+\end{block}
+\end{frame}
+\begin{frame}[label={sec:orgcf3daff}]{Expression Semantics}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./expr.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org5eb9c7e}]{Command Semantics}
+\begin{block}{The Basics}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./basics_c.png}
+\end{center}
+\pause
+\end{block}
+\begin{block}{IF-HIGH}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./ifhigh_c.png}
+\end{center}
+\end{block}
+\end{frame}
+\begin{frame}[label={sec:orga8a81af}]{Debranch Semantics: The Basics}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./basics_d.png}
+\end{center} 
+\end{frame}
+\begin{frame}[label={sec:org6f6b864}]{Debranch Semantics: IFs}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./ifs.png}
+\end{center}
+\end{frame}
+\section{Interactive Theorem Proving - What's the Fuss About?}
+\label{sec:org0e0cb69}
+\begin{frame}[label={sec:orgc7c8d3c}]{ITPs}
+\alert{Interactive Theorem Provers} have been around for quite a while. However, they have been facing a lot of very \emph{recent} adoption.
+\begin{itemize}
+\item LEAN4 (2013)
+\item Agda (1999)
+\item \alert{Coq/Rocq (1989/2025)}
+\item Isabelle (1986)
+\item Automath (1967)
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:orgf88ca47}]{Expressing Mathematical Structures}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./simple.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org0bc349f}]{Why Bother?}
+The most important thing that we get from these systems is \alert{trust}.
+\begin{itemize}
+\item \alert{Manual verification} can be error-prone and time-consuming.
+\item With a theorem prover, the implementation of the core system is comparitively very \alert{small}.
+\item With this base, it is much easier to \alert{trust results} (although there are caveats we will discuss later).
+\end{itemize}
+\end{frame}
+\section{Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks}
+\label{sec:orgfea8fb5}
+\begin{frame}[label={sec:org6ccde10}]{Expressing Grammars}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./grammar.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org380c01e}]{Expressing Semantics}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./semantics.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org6bd5574}]{Expressing Invariants}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./invariant.png}
+\end{center}
+\end{frame}
+\section{Interactive Theorem Proving - An Undegraduate Perspective}
+\label{sec:orgf200376}
+\begin{frame}[label={sec:orgf924c9f}]{Why Did I Bother?}
+\begin{itemize}
+\item I started working on this project during the first semester of my second year. I was taking Discrete Math \alert{at the same time}! \pause
+\item During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
+\item After this, I got extremely anxious about my \alert{proofs and theorems being incorrect}.
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org615d508}]{Learning to write Rocq vs Learning to write Proofs}
+\begin{block}{Learning Rocq}
+\begin{itemize}
+\item \alert{Well documented} and maintained by a team of highly qualified researchers/engineers. \pause
+\item Wonderful widely available resources for learning \alert{(Software Foundations)}. \pause
+\item At the end of the day, it is a programming language! Possibility of \alert{transfer}. \pause
+\end{itemize}
+\end{block}
+\begin{block}{Learning Proofs}
+\begin{itemize}
+\item Universally accepted resources do not exist (as far as I know). \pause
+\item Discrete Math courses often focus on \alert{already existing/well-studied structures}. \pause But (from what I know), not as much work in \alert{defining and using your own}. \pause
+\item Learning by example is difficult: "The proof is trivial", or "The proof follows simply from induction on \emph{x}".
+\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}[label={sec:org7085e4f}]{Intuition}
+Intuition plays a big role in proofs. \pause Take for example the pumping lemma for context free grammars. \pause
+\begin{center}
+\includegraphics[width=.9\linewidth]{./sipser.png}
+\end{center}
+\end{frame}
+\begin{frame}[label={sec:org72af0d2}]{Intuition in ITPs}
+\begin{itemize}
+\item There is \alert{almost no room} for intuition in ITPs. \pause
+\item This is bad. Spending time on things obvious by intuition, may hamper the \alert{non-obvious} things. \pause
+\item This is good. It allows for stronger guarantees. \pause \alert{As a student, by default, your intuition is non-existent or bad.}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org21a9e64}]{Costs and Caveats}
+\pause
+\begin{itemize}
+\item Error in \alert{specification}. \pause
+\item \alert{Bugs} in prover-software. Possibility of \alert{breaking updates}. \pause
+\item Benefits from \alert{abstractions}. \pause
+\item Strictness can cause difficulty in \alert{iteration}.
+\end{itemize}
+\end{frame}
+\end{document}

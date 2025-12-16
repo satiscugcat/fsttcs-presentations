@@ -1,0 +1,132 @@
+#+TITLE:     Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks
+#+AUTHOR:    Aniket Mishra, Abhishek Bichhawat
+#+EMAIL:     aniket.mishra@iitgn.ac.in, abhishek.b@iitgn.ac.in
+#+DATE:      [2025-12-18 Thu]
+#+DESCRIPTION: Example of using org to create presentations using the beamer exporter
+#+KEYWORDS:  beamer org orgmode
+#+LANGUAGE:  en
+#+STARTUP: beamer
+#+STARTUP: oddeven
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: Madrid
+#+OPTIONS:   H:2 toc:t
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+COLUMNS: %20ITEM %13BEAMER_ENV(Env) %6BEAMER_ENVARGS(Args) %4BEAMER_COL(Col) %7BEAMER_EXTRA(Extra)
+
+* Fall-Through Semantics for Mitigating Timing-based Side Channel Leaks
+** An Illustrative Example
+   Let us consider a C program that checks some input against a given password by comparing it by character by character.
+   #+begin_src C :eval never
+   bool matchpwd ( int * input , size_t n ) {
+     if ( n != pwd_length ) return false;
+     for ( int i = 0; i < n ; i ++) {
+       if ( input [ i ] != pwd [ i ]) return false ;
+     }
+     return true ;
+   }
+   #+end_src
+** An Exploit
+   Let's say the password is *101010*, an exploit may look like the following.
+*** An Attack Trace                                                  :B_example:
+    :PROPERTIES:
+    :BEAMER_env: example
+    :END:
+   
+    000000 \dotfill Rejected in 1^{st} iteration \pause \\
+    \alert{10}0000 \dotfill Rejected in 3^{rd} iteration \pause \\
+    \alert{1}10000 \dotfill Rejected in 2^{nd} iteration \pause \\
+    \alert{1010}00 \dotfill Rejected in 5^{th} iteration \pause \\
+    \alert{101}100 \dotfill Rejected in 4^{th} iteration \pause \\
+    *101010* \dotfill Password accepted!
+ 
+** Threat Model
+   Thus, given an adversary that can execute the program under security label \ell. \pause
+*** Data Security       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    The adversary can view the state of the memory, but values that are high relative to \ell are invisible. \pause
+    As an example, let us take \(L \sqsubseteq M \sqsubseteq H\) and let us take \(\ell = M\).
+
+    Let us say our /\mu/ is /x \rightarrow true^{L}, y \rightarrow true^{M}, z \rightarrow true^{H}/, then the adversary's view of the memory is: \pause
+
+    /x \rightarrow true^{L}, y \rightarrow true^{M}, z \rightarrow */
+    \pause
+*** Timing Security       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
+
+** Expression Semantics
+   [[file:./expr.png]]
+
+** Command Semantics
+*** The Basics       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    [[file:./basics_c.png]]
+    \pause
+*** IF-HIGH       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    [[file:./ifhigh_c.png]]
+** Debranch Semantics: The Basics
+    [[file:./basics_d.png]] 
+** Debranch Semantics: IFs
+    [[file:./ifs.png]]
+
+* Interactive Theorem Proving - What's the Fuss About?
+** ITPs
+   *Interactive Theorem Provers* have been around for quite a while. However, they have been facing a lot of very /recent/ adoption.
+   + LEAN4 (2013)
+   + Agda (1999)
+   + *Coq/Rocq (1989/2025)*
+   + Isabelle (1986)
+   + Automath (1967)
+** Expressing Mathematical Structures
+   [[file:./simple.png]]
+** Why Bother?
+   The most important thing that we get from these systems is *trust*.
+   + *Manual verification* can be error-prone and time-consuming.
+   + With a theorem prover, the implementation of the core system is comparitively very *small*.
+   + With this base, it is much easier to *trust results* (although there are caveats we will discuss later).
+* Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks
+** Expressing Grammars
+   [[file:./grammar.png]]
+** Expressing Semantics
+   [[file:./semantics.png]]
+** Expressing Invariants
+   [[file:./invariant.png]]
+* Interactive Theorem Proving - An Undegraduate Perspective
+** Why Did I Bother?
+   + I started working on this project during the first semester of my second year. I was taking Discrete Math *at the same time*! \pause
+   + During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
+   + After this, I got extremely anxious about my *proofs and theorems being incorrect*.
+** Learning to write Rocq vs Learning to write Proofs
+*** Learning Rocq
+    + *Well documented* and maintained by a team of highly qualified researchers/engineers. \pause
+    + Wonderful widely available resources for learning *(Software Foundations)*. \pause
+    + At the end of the day, it is a programming language! Possibility of *transfer*. \pause
+*** Learning Proofs
+    + Universally accepted resources do not exist (as far as I know). \pause
+    + Discrete Math courses often focus on *already existing/well-studied structures*. \pause But (from what I know), not as much work in *defining and using your own*. \pause
+    + Learning by example is difficult: "The proof is trivial", or "The proof follows simply from induction on /x/". 
+** Intuition
+   Intuition plays a big role in proofs. \pause Take for example the pumping lemma for context free grammars. \pause
+   #+ATTR_LATEX: width=\textwidth
+   [[file:./sipser.png]]
+** Intuition in ITPs
+   + There is *almost no room* for intuition in ITPs. \pause
+   + This is bad. Spending time on things obvious by intuition, may hamper the *non-obvious* things. \pause
+   + This is good. It allows for stronger guarantees. \pause *As a student, by default, your intuition is non-existent or bad.*
+** Costs and Caveats
+   \pause
+   + Error in *specification*. \pause
+   + *Bugs* in prover-software. Possibility of *breaking updates*. \pause
+   + Benefits from *abstractions*. \pause
+   + Strictness can cause difficulty in *iteration*.
