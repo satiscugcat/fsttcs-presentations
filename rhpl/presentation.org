@@ -1,6 +1,6 @@
 #+TITLE:     Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks
-#+AUTHOR:    Aniket Mishra, Abhishek Bichhawat
-#+EMAIL:     aniket.mishra@iitgn.ac.in, abhishek.b@iitgn.ac.in
+#+AUTHOR:    Aniket Mishra
+#+EMAIL:     aniket.mishra@iitgn.ac.in
 #+DATE:      [2025-12-18 Thu]
 #+DESCRIPTION: Example of using org to create presentations using the beamer exporter
 #+KEYWORDS:  beamer org orgmode
@@ -136,3 +136,5 @@
    + *Bugs* in prover-software. Possibility of *breaking updates*. \pause
    + Benefits from *abstractions*. \pause
    + Strictness can cause difficulty in *iteration*.
+** Concluding
+   That's all! Thank you for attending my talk. I am part of a student club called *,\\ AMBDA.* at IIT Gandhinagar where we like to work on interesting things in PLT along with organising talks to cultivate interest in PLT. Let me know if you are interested in knowing more! 
