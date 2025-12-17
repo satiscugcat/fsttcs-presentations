@@ -84,6 +84,7 @@
 ** ITPs
    *Interactive Theorem Provers* have been around for quite a while. However, they have been facing a lot of very /recent/ adoption.
    + LEAN4 (2013)
+   + FStar (2011)
    + Agda (1999)
    + *Coq/Rocq (1989/2025)*
    + Isabelle (1986)
