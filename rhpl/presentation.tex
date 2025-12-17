@@ -1,4 +1,4 @@
-% Created 2025-12-17 Wed 10:04
+% Created 2025-12-17 Wed 11:27
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -12,7 +12,7 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\usetheme{Madrid}
+\usetheme{Antibes}
 \author{Aniket Mishra}
 \date{\textit{{[}2025-12-18 Thu]}}
 \title{Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks}
@@ -31,8 +31,8 @@
 \end{frame}
 
 \section{Fall-Through Semantics for Mitigating Timing-based Side Channel Leaks}
-\label{sec:orgca5917f}
-\begin{frame}[label={sec:org6b1ea58},fragile]{An Illustrative Example}
+\label{sec:org5c9a535}
+\begin{frame}[label={sec:org7d63c52},fragile]{An Illustrative Example}
  Let us consider a C program that checks some input against a given password by comparing it by character by character.
 \begin{verbatim}
 bool matchpwd ( int * input , size_t n ) {
@@ -44,9 +44,9 @@ bool matchpwd ( int * input , size_t n ) {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:org23e0cdd}]{An Exploit}
+\begin{frame}[label={sec:orge5f7588}]{An Exploit}
 Let's say the password is \alert{101010}, an exploit may look like the following.
-\begin{example}[An Attack Trace]\label{sec:orgf7d1a15}
+\begin{example}[An Attack Trace]\label{sec:org273fbd1}
 000000 \dotfill Rejected in 1\textsuperscript{st} iteration \pause \\
 \alert{10}0000 \dotfill Rejected in 3\textsuperscript{rd} iteration \pause \\
 \alert{1}10000 \dotfill Rejected in 2\textsuperscript{nd} iteration \pause \\
@@ -55,7 +55,7 @@ Let's say the password is \alert{101010}, an exploit may look like the following
 \alert{101010} \dotfill Password accepted!
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:org369e70a}]{Threat Model}
+\begin{frame}[label={sec:orgb814ad7}]{Threat Model}
 Thus, given an adversary that can execute the program under security label \(\ell\). \pause
 \begin{block}{Data Security}
 The adversary can view the state of the memory, but values that are high relative to \(\ell\) are invisible. \pause
@@ -70,12 +70,12 @@ Let us say our \emph{\(\mu\)} is \emph{x \(\rightarrow\) true\textsuperscript{L}
 The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org1705196}]{Expression Semantics}
+\begin{frame}[label={sec:org40439df}]{Expression Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./expr.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org20a7d8f}]{Command Semantics}
+\begin{frame}[label={sec:org241648b}]{Command Semantics}
 \begin{block}{The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_c.png}
@@ -88,19 +88,19 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \end{center}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:orga4caa72}]{Debranch Semantics: The Basics}
+\begin{frame}[label={sec:org4a0d31d}]{Debranch Semantics: The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_d.png}
 \end{center} 
 \end{frame}
-\begin{frame}[label={sec:orgf8cd5e7}]{Debranch Semantics: IFs}
+\begin{frame}[label={sec:org8e4bf88}]{Debranch Semantics: IFs}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./ifs.png}
 \end{center}
 \end{frame}
 \section{Interactive Theorem Proving - What's the Fuss About?}
-\label{sec:orgd113518}
-\begin{frame}[label={sec:orgba10ebe}]{ITPs}
+\label{sec:org95f7580}
+\begin{frame}[label={sec:orgdec4948}]{ITPs}
 \alert{Interactive Theorem Provers} have been around for quite a while. However, they have been facing a lot of very \emph{recent} adoption.
 \begin{itemize}
 \item LEAN4 (2013)
@@ -110,12 +110,12 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \item Automath (1967)
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org5ad1a4f}]{Expressing Mathematical Structures}
+\begin{frame}[label={sec:orgcd555b6}]{Expressing Mathematical Structures}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./simple.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org04b2f07}]{Why Bother?}
+\begin{frame}[label={sec:orgdfeb743}]{Why Bother?}
 The most important thing that we get from these systems is \alert{trust}.
 \begin{itemize}
 \item \alert{Manual verification} can be error-prone and time-consuming.
@@ -124,32 +124,32 @@ The most important thing that we get from these systems is \alert{trust}.
 \end{itemize}
 \end{frame}
 \section{Mechanical Specification and Verification for Mitigating Timing-based Side Channel Leaks}
-\label{sec:orgc51ccc3}
-\begin{frame}[label={sec:orga6863dd}]{Expressing Grammars}
+\label{sec:org0f27c9c}
+\begin{frame}[label={sec:org88be208}]{Expressing Grammars}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./grammar.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgc7c06a1}]{Expressing Semantics}
+\begin{frame}[label={sec:org51f39ce}]{Expressing Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./semantics.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org2a134cf}]{Expressing Invariants}
+\begin{frame}[label={sec:orga51aa70}]{Expressing Invariants}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./invariant.png}
 \end{center}
 \end{frame}
 \section{Interactive Theorem Proving - An Undegraduate Perspective}
-\label{sec:org8b3ca11}
-\begin{frame}[label={sec:org9bd135b}]{Why Did I Bother?}
+\label{sec:orgdff5dac}
+\begin{frame}[label={sec:org055ef5d}]{Why Did I Bother?}
 \begin{itemize}
 \item I started working on this project during the first semester of my second year. I was taking Discrete Math \alert{at the same time}! \pause
 \item During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
 \item After this, I got extremely anxious about my \alert{proofs and theorems being incorrect}.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgd2c444d}]{Learning to write Rocq vs Learning to write Proofs}
+\begin{frame}[label={sec:org571d769}]{Learning to write Rocq vs Learning to write Proofs}
 \begin{block}{Learning Rocq}
 \begin{itemize}
 \item \alert{Well documented} and maintained by a team of highly qualified researchers/engineers. \pause
@@ -165,20 +165,20 @@ The most important thing that we get from these systems is \alert{trust}.
 \end{itemize}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org93d0b12}]{Intuition}
+\begin{frame}[label={sec:org6f9a95d}]{Intuition}
 Intuition plays a big role in proofs. \pause Take for example the pumping lemma for context free grammars. \pause
 \begin{center}
 \includegraphics[width=.9\linewidth]{./sipser.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org5376147}]{Intuition in ITPs}
+\begin{frame}[label={sec:orgb3353ff}]{Intuition in ITPs}
 \begin{itemize}
 \item There is \alert{almost no room} for intuition in ITPs. \pause
 \item This is bad. Spending time on things obvious by intuition, may hamper the \alert{non-obvious} things. \pause
 \item This is good. It allows for stronger guarantees. \pause \alert{As a student, by default, your intuition is non-existent or bad.}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org05aa12a}]{Costs and Caveats}
+\begin{frame}[label={sec:org055ef7d}]{Costs and Caveats}
 \pause
 \begin{itemize}
 \item Error in \alert{specification}. \pause
@@ -187,7 +187,7 @@ Intuition plays a big role in proofs. \pause Take for example the pumping lemma 
 \item Strictness can cause difficulty in \alert{iteration}.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org1c9490d}]{Concluding}
-That's all! Thank you for attending my talk. I am part of a student club called \alert{,$\backslash$\ AMBDA.} at IIT Gandhinagar where we like to work on interesting things in PLT along with organising talks to cultivate interest in PLT. Let me know if you are interested in knowing more! 
+\begin{frame}[label={sec:org22751ad}]{Concluding}
+That's all! Thank you for attending my talk. I am part of a student club called \alert{,$\backslash$\ AMBDA.} at IIT Gandhinagar where we like to work on interesting things in PLT along with organising talks to cultivate interest in PLT. Let me know if you are interested in knowing more! You can also contact me at \url{mailto:aniket.mishra@iitgn.ac.in}.
 \end{frame}
 \end{document}

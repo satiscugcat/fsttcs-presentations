@@ -1,5 +1,5 @@
 #+TITLE:     Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks
-#+AUTHOR:    Aniket Mishra, Abhishek Bichhawat
+#+AUTHOR:    *Aniket Mishra (IIT Gandhinagar)*, Abhishek Bichhawat (IIT Gandhinagar)
 #+EMAIL:     aniket.mishra@iitgn.ac.in, abhishek.b@iitgn.ac.in
 #+DATE:      [2025-12-18 Thu]
 #+DESCRIPTION: Example of using org to create presentations using the beamer exporter
@@ -9,7 +9,7 @@
 #+STARTUP: oddeven
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [presentation]
-#+BEAMER_THEME: Madrid
+#+BEAMER_THEME: Antibes
 #+OPTIONS:   H:2 toc:t
 #+SELECT_TAGS: export
 #+EXCLUDE_TAGS: noexport
@@ -59,19 +59,20 @@
 * Mitigating Timing-Based Side Channel Leaks
 ** Dummy Code Insertion
    [[file:./agat.png]]
+   From Transforming Timing Leaks by Johan Agat
 ** Constant Time Programming
 *** Constant Time Program       :B_block:
     :PROPERTIES:
     :BEAMER_env: block
     :END:
    #+begin_src C
-   bool equals(byte a[], size_t a_len, byte b[], size_t b_len) {
+   bool equals(byte a[], size_t a_len,
+   	    byte b[], size_t b_len) {
      volatile size_t x = a_len ^ b_len;
-     for (size_t i = 0; ((i < a_len) & (i < b_len)); i++) {
-       x |= a[i] ^ b[i];
-     }
-     return (x==0);
-   }
+     for (size_t i = 0;
+          ((i < a_len) & (i < b_len));
+          i++) {x |= a[i] ^ b[i]; }
+     return (x==0); }
    #+end_src
 *** Preservation of Constant Time Property       :B_block:
     :PROPERTIES:
@@ -195,14 +196,52 @@
    [[file:./grammar.png]]
 ** Expressing Semantics
    [[file:./semantics.png]]
-** Expressing Invariants
-   [[file:./invariant.png]]
-
 ** Observational Equivalence
    [[file:./obseq.png]]
+
+*** Observational Equivalence     :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+    For any given /c, \mu_{1}, \mu_{2}/ and /pc/
+    \[\mu_{1} \sim_\ell \mu_{2} \rightarrow \mu'_{1} \sim_{\ell}\mu'_{2} \]
+
+    where
+    \(c ~\arrowvert ~\mu_{1} \Downarrow_{pc} T_{1} ~\arrowvert ~\mu'_{1}\) and
+    \(c ~\arrowvert ~\mu_{2} \Downarrow_{pc} T_{2} ~\arrowvert ~\mu'_{2}\)
 ** Timing Sensitive Non-Interference
    [[file:./timsec.png]]
+*** Timing Sensitive Non-Interference                                :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+    For any given /c, \mu_{1}, \mu_{2}/ and /pc/
+    \[\mu_{1} \sim_\ell \mu_{2} \rightarrow T_{1} = T_{2}\]
+
+    where
+    \(c ~\arrowvert ~\mu_{1} \Downarrow_{pc} T_{1} ~\arrowvert ~\mu'_{1}\) and
+    \(c ~\arrowvert ~\mu_{2} \Downarrow_{pc} T_{2} ~\arrowvert ~\mu'_{2}\)
+
 ** Soundness
-   [[file:./sound.png]]
+    [[file:./sound.png]]
+*** Timing Soundness                                                 :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+    For any given /c, \mu/ and /pc/
+    
+    \[c ~\arrowvert ~\mu_{} \Downarrow_{pc} T ~\arrowvert ~\mu' \rightarrow c ~\arrowvert ~\mu_{\downarrow} \Downarrow \mu'_{\downarrow} \]
+
+    
 ** Partial Completeness
    [[file:./pcomplete.png]]
+
+*** Partial Completeness                                             :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+    For any given /c, \mu/ and /pc/ such that /c/ contains no "while" commands, if for some /\eta/ we have \(c ~\arrowvert ~\mu \Downarrow \eta \),
+    there exist /T/ and /mu'/ for which we have
+    \[c ~\arrowvert ~\mu_{} \Downarrow_{pc} T ~\arrowvert ~\mu' ~\land ~  \mu'_{\downarrow} = \eta \]
+** Concluding
+   That's all! Thanks for attending my talk. If you wish to contact me you can do so at [[mailto:aniket.mishra@iitgn.ac.in]].

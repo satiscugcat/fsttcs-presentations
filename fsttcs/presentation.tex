@@ -1,4 +1,4 @@
-% Created 2025-12-16 Tue 15:36
+% Created 2025-12-17 Wed 11:31
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -12,12 +12,12 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\usetheme{Madrid}
-\author{Aniket Mishra, Abhishek Bichhawat}
+\usetheme{Antibes}
+\author{\alert{Aniket Mishra (IIT Gandhinagar)}, Abhishek Bichhawat (IIT Gandhinagar)}
 \date{\textit{{[}2025-12-18 Thu]}}
 \title{Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks}
 \hypersetup{
- pdfauthor={Aniket Mishra, Abhishek Bichhawat},
+ pdfauthor={\alert{Aniket Mishra (IIT Gandhinagar)}, Abhishek Bichhawat (IIT Gandhinagar)},
  pdftitle={Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks},
  pdfkeywords={beamer org orgmode},
  pdfsubject={Example of using org to create presentations using the beamer exporter},
@@ -31,14 +31,14 @@
 \end{frame}
 
 \section{Timing-Based Side Channel Leaks}
-\label{sec:org1fb28e6}
-\begin{frame}[label={sec:org2a5830b}]{Traditional Cybersecurity}
+\label{sec:org846de19}
+\begin{frame}[label={sec:org1dfa253}]{Traditional Cybersecurity}
 Traditionally, cybersecurity has dealt with the analysis of \alert{overt} channels.
 \begin{center}
 \includegraphics[width=.9\linewidth]{./alice_bob.jpg}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgd264b44}]{What are Side Channels?}
+\begin{frame}[label={sec:orgb11736b}]{What are Side Channels?}
 A \emph{side} channel, on the other hand, involves no such direct access. Instead, vulnerabilities are introduced by \alert{side effects} of a program's execution.
 \pause
 \begin{itemize}
@@ -53,7 +53,7 @@ A \emph{side} channel, on the other hand, involves no such direct access. Instea
 \item \alert{Time it takes for the program to execute}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgb7933ce},fragile]{An Illustrative Example}
+\begin{frame}[label={sec:orgba50fbd},fragile]{An Illustrative Example}
  Let us consider a C program that checks some input against a given password by comparing it by character by character.
 \begin{verbatim}
 bool matchpwd ( int * input , size_t n ) {
@@ -65,9 +65,9 @@ bool matchpwd ( int * input , size_t n ) {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:org837623b}]{An Exploit}
+\begin{frame}[label={sec:orgdad22b0}]{An Exploit}
 Let's say the password is \alert{101010}, an exploit may look like the following.
-\begin{example}[An Attack Trace]\label{sec:org1fbba7a}
+\begin{example}[An Attack Trace]\label{sec:org483df32}
 000000 \dotfill Rejected in 1\textsuperscript{st} iteration \pause \\
 \alert{10}0000 \dotfill Rejected in 3\textsuperscript{rd} iteration \pause \\
 \alert{1}10000 \dotfill Rejected in 2\textsuperscript{nd} iteration \pause \\
@@ -76,29 +76,30 @@ Let's say the password is \alert{101010}, an exploit may look like the following
 \alert{101010} \dotfill Password accepted!
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:org449cd93}]{The Reality of Timing Side Channels}
+\begin{frame}[label={sec:orge329884}]{The Reality of Timing Side Channels}
 Speculative execution and cache side channels are subtler ways that these vulnerabilities can be introduced.
 \begin{center}
 \includegraphics[width=.9\linewidth]{spooky.png}
 \end{center}
 \end{frame}
 \section{Mitigating Timing-Based Side Channel Leaks}
-\label{sec:org393bc22}
-\begin{frame}[label={sec:orgdd509cf}]{Dummy Code Insertion}
+\label{sec:org6fa8ae9}
+\begin{frame}[label={sec:orge43d5de}]{Dummy Code Insertion}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./agat.png}
 \end{center}
+From Transforming Timing Leaks by Johan Agat
 \end{frame}
-\begin{frame}[label={sec:orgcc40f62},fragile]{Constant Time Programming}
+\begin{frame}[label={sec:orgf1cf9ea},fragile]{Constant Time Programming}
  \begin{block}{Constant Time Program}
 \begin{verbatim}
-bool equals(byte a[], size_t a_len, byte b[], size_t b_len) {
+bool equals(byte a[], size_t a_len,
+            byte b[], size_t b_len) {
   volatile size_t x = a_len ^ b_len;
-  for (size_t i = 0; ((i < a_len) & (i < b_len)); i++) {
-    x |= a[i] ^ b[i];
-  }
-  return (x==0);
-}
+  for (size_t i = 0;
+       ((i < a_len) & (i < b_len));
+       i++) {x |= a[i] ^ b[i]; }
+  return (x==0); }
 \end{verbatim}
 \end{block}
 \begin{block}{Preservation of Constant Time Property}
@@ -106,7 +107,7 @@ Separately, work has been done on ensuring the preservation of this invariant.
 See: Formal verification of a constant-time preserving C compiler by Barthe et. al.   
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org3acf89f}]{Code Generation}
+\begin{frame}[label={sec:org8ea78e9}]{Code Generation}
 \begin{block}{Program Repair}
 Work has been done in linearising the source code of a program.
 
@@ -118,7 +119,7 @@ Similarly, work has also been done at generating constant time code given a non 
 See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and Data Flow Linearization by Borrello et al.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org174fc67}]{Our Approach}
+\begin{frame}[label={sec:org7e1e4e9}]{Our Approach}
 \begin{itemize}
 \item All of the above approaches require the entire \alert{source code} to be available beforehand. This is \alert{not always possible}.\pause
 \item Many of these approaches employ the use of testing and fuzzing-based techniques to find sensitive execution pathways in the program. \pause
@@ -126,8 +127,8 @@ See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and 
 \end{itemize}
 \end{frame}
 \section{Fall-Through Semantics for Mitigating Timing-Based Side Channel leaks}
-\label{sec:org491766f}
-\begin{frame}[label={sec:orga345d6c}]{The WHILE Language}
+\label{sec:org2122fb4}
+\begin{frame}[label={sec:org824062f}]{The WHILE Language}
 \(\mu := \cdot ~\arrowvert ~ \mu, x \Rightarrow n^k\)
 
 \pause
@@ -138,7 +139,7 @@ See: Constantine: Automatic Side-Channel Resistance Using Efficient Control and 
 
 \(c := \textsf{skip} ~\arrowvert ~x:=e  ~\arrowvert ~c_1;c_2 ~\arrowvert ~\textsf{if} ~e ~\textsf{then} ~c_1 ~\textsf{else} ~c_2 ~\arrowvert ~\textsf{while} ~e ~\textsf{do} ~c\)
 \end{frame}
-\begin{frame}[label={sec:orga80a180}]{Judgements}
+\begin{frame}[label={sec:org9a26b34}]{Judgements}
 \begin{block}{Expression Judgement}
 \[e ~\arrowvert ~\mu \Downarrow_{pc} T, n^{k} \]
 
@@ -150,21 +151,21 @@ An expression given some store \emph{\(\mu\)} and some evaluation level \emph{pc
 A command given some store \emph{mu}, and evaluation level \emph{pc} produces a store \emph{\(\mu\)'} in time \emph{T}.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org73aa06c}]{Dynamic IFC}
+\begin{frame}[label={sec:org30d4e96}]{Dynamic IFC}
 Let us imagine there are variables \emph{x} and \emph{y}, where \emph{x} is hidden and holds some sensitive data and \emph{y} does not. There are 3 kinds of leaks that could happen. \pause
-\begin{example}[Direct Flow]\label{sec:orgf686839}
+\begin{example}[Direct Flow]\label{sec:orgd652b00}
 \(y:=x\)
 \pause
 \end{example}
-\begin{example}[Indirect Flow]\label{sec:orgdf11b73}
+\begin{example}[Indirect Flow]\label{sec:orga8b5a63}
 \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~y:=1\)
 \pause
 \end{example}
-\begin{example}[Side Channel]\label{sec:orgef809bd}
+\begin{example}[Side Channel]\label{sec:org9f27cc2}
 \(\textsf{if} ~x ~\textsf{then} ~y:=0 ~\textsf{else} ~\{y:=1; ~y:=1\}\)
 \end{example}
 \end{frame}
-\begin{frame}[label={sec:org8531894}]{Threat Model}
+\begin{frame}[label={sec:orgaabd83a}]{Threat Model}
 Thus, given an adversary that can execute the program under security label \(\ell\). \pause
 \begin{block}{Data Security}
 The adversary can view the state of the memory, but values that are high relative to \(\ell\) are invisible. \pause
@@ -179,12 +180,12 @@ Let us say our \emph{\(\mu\)} is \emph{x \(\rightarrow\) true\textsuperscript{L}
 The adversary has exact knowledge of when and where each memory access takes place during a program's execution.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org089a1fe}]{Expression Semantics}
+\begin{frame}[label={sec:org018c29c}]{Expression Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./expr.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org1008753}]{Command Semantics}
+\begin{frame}[label={sec:org5350b91}]{Command Semantics}
 \begin{block}{The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_c.png}
@@ -197,64 +198,88 @@ The adversary has exact knowledge of when and where each memory access takes pla
 \end{center}
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org526263e}]{Debranch Semantics: The Basics}
+\begin{frame}[label={sec:orgd17a7bc}]{Debranch Semantics: The Basics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./basics_d.png}
 \end{center} 
 \end{frame}
-\begin{frame}[label={sec:orge30d63b}]{Debranch Semantics: IFs}
+\begin{frame}[label={sec:orge8b82ac}]{Debranch Semantics: IFs}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./ifs.png}
 \end{center}
 \end{frame}
 \section{(Formal) Fall-Through Semantics for Mitigating Timing-Based Side Channel Leaks}
-\label{sec:org26cb65c}
-\begin{frame}[label={sec:org002f386}]{Rocq, Rocq, Correct!}
+\label{sec:orgebb6f37}
+\begin{frame}[label={sec:org3b116e7}]{Rocq, Rocq, Correct!}
 We choose to prove our theorems and formalise our semantics within the \alert{Rocq} (formerly Coq) theorem prover.
 \end{frame}
-\begin{frame}[label={sec:org850f7da}]{PartialOrder}
+\begin{frame}[label={sec:orgb4f7199}]{PartialOrder}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./partial_order.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org7cad8d4}]{Join Semi-Lattice}
+\begin{frame}[label={sec:org927da3f}]{Join Semi-Lattice}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./join.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgc230a95}]{Expressing Grammars}
+\begin{frame}[label={sec:org3908e44}]{Expressing Grammars}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./grammar.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgfeb3c8a}]{Expressing Semantics}
+\begin{frame}[label={sec:org9930e9f}]{Expressing Semantics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./semantics.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orge7a11e1}]{Expressing Invariants}
-\begin{center}
-\includegraphics[width=.9\linewidth]{./invariant.png}
-\end{center}
-\end{frame}
-\begin{frame}[label={sec:orgff00bd8}]{Observational Equivalence}
+\begin{frame}[label={sec:org193c093}]{Observational Equivalence}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./obseq.png}
 \end{center}
+\begin{theorem}[Observational Equivalence]\label{sec:orgfab34dd}
+For any given \emph{c, \(\mu\)\textsubscript{1}, \(\mu\)\textsubscript{2}} and \emph{pc}
+\[\mu_{1} \sim_\ell \mu_{2} \rightarrow \mu'_{1} \sim_{\ell}\mu'_{2} \]
+
+where
+\(c ~\arrowvert ~\mu_{1} \Downarrow_{pc} T_{1} ~\arrowvert ~\mu'_{1}\) and
+\(c ~\arrowvert ~\mu_{2} \Downarrow_{pc} T_{2} ~\arrowvert ~\mu'_{2}\)
+\end{theorem}
 \end{frame}
-\begin{frame}[label={sec:orgebafb39}]{Timing Sensitive Non-Interference}
+\begin{frame}[label={sec:org2a63b89}]{Timing Sensitive Non-Interference}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./timsec.png}
 \end{center}
+\begin{theorem}[Timing Sensitive Non-Interference]\label{sec:org316109a}
+For any given \emph{c, \(\mu\)\textsubscript{1}, \(\mu\)\textsubscript{2}} and \emph{pc}
+\[\mu_{1} \sim_\ell \mu_{2} \rightarrow T_{1} = T_{2}\]
+
+where
+\(c ~\arrowvert ~\mu_{1} \Downarrow_{pc} T_{1} ~\arrowvert ~\mu'_{1}\) and
+\(c ~\arrowvert ~\mu_{2} \Downarrow_{pc} T_{2} ~\arrowvert ~\mu'_{2}\)
+\end{theorem}
 \end{frame}
-\begin{frame}[label={sec:org42c8abd}]{Soundness}
+\begin{frame}[label={sec:orgb243d74}]{Soundness}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./sound.png}
 \end{center}
+\begin{theorem}[Timing Soundness]\label{sec:org87dd208}
+For any given \emph{c, \(\mu\)} and \emph{pc}
+
+\[c ~\arrowvert ~\mu_{} \Downarrow_{pc} T ~\arrowvert ~\mu' \rightarrow c ~\arrowvert ~\mu_{\downarrow} \Downarrow \mu'_{\downarrow} \]
+\end{theorem}
 \end{frame}
-\begin{frame}[label={sec:orgb5cb718}]{Partial Completeness}
+\begin{frame}[label={sec:orgbdcf6bc}]{Partial Completeness}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./pcomplete.png}
 \end{center}
+\begin{theorem}[Partial Completeness]\label{sec:org97b70a6}
+For any given \emph{c, \(\mu\)} and \emph{pc} such that \emph{c} contains no "while" commands, if for some \emph{\(\eta\)} we have \(c ~\arrowvert ~\mu \Downarrow \eta\),
+there exist \emph{T} and \emph{mu'} for which we have
+\[c ~\arrowvert ~\mu_{} \Downarrow_{pc} T ~\arrowvert ~\mu' ~\land ~  \mu'_{\downarrow} = \eta \]
+\end{theorem}
+\end{frame}
+\begin{frame}[label={sec:org5e25fd7}]{Concluding}
+That's all! Thanks for attending my talk. If you wish to contact me you can do so at \url{mailto:aniket.mishra@iitgn.ac.in}.
 \end{frame}
 \end{document}

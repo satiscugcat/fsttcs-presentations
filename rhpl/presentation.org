@@ -9,7 +9,7 @@
 #+STARTUP: oddeven
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [presentation]
-#+BEAMER_THEME: Madrid
+#+BEAMER_THEME: Antibes
 #+OPTIONS:   H:2 toc:t
 #+SELECT_TAGS: export
 #+EXCLUDE_TAGS: noexport
@@ -137,4 +137,4 @@
    + Benefits from *abstractions*. \pause
    + Strictness can cause difficulty in *iteration*.
 ** Concluding
-   That's all! Thank you for attending my talk. I am part of a student club called *,\\ AMBDA.* at IIT Gandhinagar where we like to work on interesting things in PLT along with organising talks to cultivate interest in PLT. Let me know if you are interested in knowing more! 
+   That's all! Thank you for attending my talk. I am part of a student club called *,\\ AMBDA.* at IIT Gandhinagar where we like to work on interesting things in PLT along with organising talks to cultivate interest in PLT. Let me know if you are interested in knowing more! You can also contact me at [[mailto:aniket.mishra@iitgn.ac.in]].
