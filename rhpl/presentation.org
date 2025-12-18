@@ -106,7 +106,7 @@
 * Interactive Theorem Proving - An Undegraduate Perspective
 ** Why Did I Bother?
    + I started working on this project during the first semester of my second year. I was taking Discrete Math *at the same time*! \pause
-   + During December, I spent some time in IIT Delhi with Prof Vaishnavi Sundararanjan and started properly working with theorem provers. \pause
+   + During December, I spent some time in IIT Delhi with Prof. Vaishnavi Sundararajan and started properly working with theorem provers. \pause
    + After this, I got extremely anxious about my *proofs and theorems being incorrect*.
 ** Learning to write Rocq vs Learning to write Proofs
 *** Learning Rocq       :B_block:
