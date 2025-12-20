@@ -1,0 +1,170 @@
+#+TITLE:     Formalising the Rust Core
+#+AUTHOR:    Aniket Mishra
+#+EMAIL:     aniket.mishra@iitgn.ac.in
+#+DATE:      [2025-12-20 Thu]
+#+DESCRIPTION: Example of using org to create presentations using the beamer exporter
+#+KEYWORDS:  beamer org orgmode
+#+LANGUAGE:  en
+#+STARTUP: beamer
+#+STARTUP: oddeven
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: Antibes
+#+OPTIONS:   H:2 toc:t
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+COLUMNS: %20ITEM %13BEAMER_ENV(Env) %6BEAMER_ENVARGS(Args) %4BEAMER_COL(Col) %7BEAMER_EXTRA(Extra)
+
+* Introduction
+** Acknowledgements
+   
+   [[file:./CRYSPEN.png]]
+
+   I am a BTech student in IIT Gandhinagar, currently in my 3rd year of study. \pause This work was done during a remote internship with *CRYSPEN*, a company based in France and Germany that deals with the development of high assurance software. \pause I worked primarily with *Karthikeyan Bhargavan (Chief Research Scientist)* and *Maxime Buyse (Proof and Tool Engineer)*.
+
+** SIMD and Vector Intrinsics
+   
+   SIMD stands for Single Instruction, Multiple Data. Vector intrinsics are special functions offered by the compiler, that allow the use of SIMD instructions.
+** SIMD in Rust
+   The core::arch crate (the Rust equivalent of a C library) is responsible for exposing these vendor-specific intrinsics that typically correspond to a single machine instruction.
+   #+begin_src rust :exports both :eval never
+   /// Simple program squares elements in 16 bit chunks.
+   use core::arch::x86_64::*;
+   fn main() {
+       unsafe {
+   	let a : __m256i = _mm256_set_epi16
+   	    (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+           let b : __m256i = _mm256_mullo_epi16(a, a);
+   	println!("{}",_mm256_extract_epi16::<0>(b));
+   	println!("{}",_mm256_extract_epi16::<15>(b));
+       }
+   }
+   #+end_src
+   
+** Importance
+   Rust has been finding popular use in new security-critical and performance-sensitive projects, and SIMD vector intrinsics are often used for performance/efficiency in such projects.
+   + Dalek: Elliptic Curve Cryptography
+   + Hashbrown
+   + Libcrux
+* A Developer's Tale
+** Rust Docs
+   Let us imagine ourselves as a Rust developer looking through these intrinsics. Let us say we want to understand the intrinsic "vabdq\under{}s8", in core::arch::aarch64, used for performing an absolute difference. \pause Since we are Rust developers, our first instinct is to look at the Rust docs. A quick google search leads us to this. \pause
+   
+   [[file:./vabdq.png]]
+
+** ARM Docs
+   Not a great start. The Rust documentation barely explains anything, all it does is link to the ARM documentation. But atleast the ARM docs are nice! There is some pseudocode to accompany it too. \pause
+*** Documentation String       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    Signed Absolute Difference. This instruction *subtracts* the elements of the vector of *the second source* SIMD&FP register *from the* corresponding elements of the *first source* SIMD&FP register, places the *absolute values of the results* into a vector, and writes the vector to the *destination* SIMD&FP register.
+
+
+
+** panic!()
+   Everything seems fine, but when we run the tests, they *fail*! \pause After hours of debugging, in what feels like a miracle, we find the issue. \pause
+   #+begin_src rust :eval never
+   use core::arch::aarch64::*;
+   fn main() {
+       unsafe {
+   	   let a = vld1q_s8(&(127 as i8) as *const i8);
+   	   let b = vld1q_s8(&(-2 as i8) as *const i8);
+
+   	   let result = vabdq_s8(a, b);
+   	   let result =
+   	    *(&result as *const int8x16_t
+   	     as *const [i8; 16]);
+   	   println!("{}", result[0])
+       }
+   }
+   #+end_src
+   
+** A Bug in the Rust Source????
+   \pause
+   
+   #+begin_src rust :eval never
+   pub fn vabdq_s8(a: int8x16_t, b: int8x16_t) -> int8x16_t {
+       unsafe extern "unadjusted" {
+           ...
+           #[cfg_attr(target_arch = "arm",
+             link_name = "llvm.arm.neon.vabds.v16i8")]
+           fn _vabdq_s8(a: int8x16_t, b: int8x16_t)
+   		     -> int8x16_t;
+       }
+       unsafe { _vabdq_s8(a, b) }
+   }
+   #+end_src
+   \pause
+   The Rust code seems to use FFI to make a call using LLVM IR! So there's no way the Rust Source is wrong. \pause Frustrated with the hours we spent on this, we sit back and sigh, being done for the day.
+   
+** The Moral of the Story
+
+   Essentially, bad documentation means that even the best Rust programmers need to wade through Intel or ARM assembly documentation (and more!) to understand these intrinsics. \pause This is especially bad for us verifiers! \pause
+   + HACL-STAR (F*)
+   + Jasmin (Easy Crypt)
+   + s2n-bignum (HOL Light)
+   
+* Our Solution
+** The Problem
+   Challenge #15 of the [[https://model-checking.github.io/verify-rust-std/challenges/0015-intrinsics-simd.html][Verify Rust Std]] puts forth this issue. The problem statement reads as follows: \pause
+
+*** Challenge 15       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   Consequently, we believe there is a strong need for a *consistent, formal, testable* specification of the SIMD intrinsics that can aid Rust developers. Furthermore, we believe that *this specification should written in a way that can be used to aid formal verification of Rust programs using various proof assistants*.
+
+** Rewrite it .. in Rust!
+   \pause
+   Our solution involves writing the models of the intrinsics as *pure, functional Rust code* that matches the input/output behaviour of the intrinsics. This comes with a few benefits.\pause
+   + Our solution is naturally proof assistant-agnostic. \pause
+   + Anybody interested in using our models, can use the equipment they have developed for modelling and verifying Rust programs in /general/. \pause
+   + It allows us to easily test our models against the actual intrinsics. \pause
+     
+** Model Generation
+   Modelling by hand is not *scalable*. \pause Fortunately, we can use the Rust core itself! \pause Within the Rust core, we (essentially) find 3 kinds of intrinsics.
+   + Built-in
+   + External
+   + Defined
+
+** Built-In Intrinsics                                             
+
+   [[file:./simd.png]]
+
+** External Intrinsics
+   [[file:./extern.png]]
+** Defined Intrinsics
+   [[file:./defined1.png]]
+
+   [[file:./defined2.png]]
+** Hand-Written Models: Built-In
+   [[file:./insert.png]]
+   [[file:./extract.png]]
+   [[file:./add.png]]
+** Hand-Written Models: External
+   [[file:./handwritten.png]]
+** Generated Models: Defined
+   [[file:./gen1.png]]
+   [[file:./gen2.png]]
+** Testing!
+   [[file:./tests.png]]
+* Results
+** Acceptance of Solution by AWS
+   [[file:./aws.png]]
+** Finding a Bug in Rust
+   [[file:./pr.png]]
+** Future Work
+
+   This work has also already been used for formal verification purposes in the *libcrux* repository! \pause For future work, we would like to work on the following things. \pause
+   + Currently, we only have models for intrinsics that operate on integers. We would like to extend our approach to *floating point numbers*. \pause
+   + We do not provide models for intrinsics that *mutate* values. This is also a line of further work. \pause
+   + Our methodology efficiently models Rust intrinsics, but *does not discover bugs*.
+** Concluding
+   That is all. Thank you for coming to my talk! I hope it was somewhat informative.
+   If you want to get in contact with CRYSPEN, you can do so via the [[https://cryspen.com/][website]].
+   You can find the content of this talk at [[https://github.com/satiscugcat/fsttcs-presentations][satiscugcat/fsttcs-presentations]].
+   Finally, at IIT Gandhinagar, I am organising a student group gor PL work called *,\\ AMBDA.*  If that sounds interesting to you and you want to be involved/collaborate, please do reach out!
+
+
+   
