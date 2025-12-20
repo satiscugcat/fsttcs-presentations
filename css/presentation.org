@@ -1,4 +1,4 @@
-#+TITLE:     Formalising the Rust Core
+#+TITLE:     Formally Specifying the Rust Core
 #+AUTHOR:    Aniket Mishra
 #+EMAIL:     aniket.mishra@iitgn.ac.in
 #+DATE:      [2025-12-20 Thu]

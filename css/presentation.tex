@@ -1,4 +1,4 @@
-% Created 2025-12-20 Sat 09:52
+% Created 2025-12-20 Sat 09:56
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -15,10 +15,10 @@
 \usetheme{Antibes}
 \author{Aniket Mishra}
 \date{\textit{{[}2025-12-20 Sat]}}
-\title{Formalising the Rust Core}
+\title{Formally Specifying the Rust Core}
 \hypersetup{
  pdfauthor={Aniket Mishra},
- pdftitle={Formalising the Rust Core},
+ pdftitle={Formally Specifying the Rust Core},
  pdfkeywords={beamer org orgmode},
  pdfsubject={Example of using org to create presentations using the beamer exporter},
  pdfcreator={Emacs 30.2 (Org mode 9.7.11)}, 
@@ -31,18 +31,18 @@
 \end{frame}
 
 \section{Introduction}
-\label{sec:orgb16fa06}
-\begin{frame}[label={sec:org79c7b9c}]{Acknowledgements}
+\label{sec:orgefbf53e}
+\begin{frame}[label={sec:org0aa4f56}]{Acknowledgements}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./CRYSPEN.png}
 \end{center}
 
 I am a BTech student in IIT Gandhinagar, currently in my 3rd year of study. \pause This work was done during a remote internship with \alert{CRYSPEN}, a company based in France and Germany that deals with the development of high assurance software. \pause I worked primarily with \alert{Karthikeyan Bhargavan (Chief Research Scientist)} and \alert{Maxime Buyse (Proof and Tool Engineer)}.
 \end{frame}
-\begin{frame}[label={sec:org0c3a1ae}]{SIMD and Vector Intrinsics}
+\begin{frame}[label={sec:org0731e5e}]{SIMD and Vector Intrinsics}
 SIMD stands for Single Instruction, Multiple Data. Vector intrinsics are special functions offered by the compiler, that allow the use of SIMD instructions.
 \end{frame}
-\begin{frame}[label={sec:orgc51176f},fragile]{SIMD in Rust}
+\begin{frame}[label={sec:org53708fa},fragile]{SIMD in Rust}
  The core::arch crate (the Rust equivalent of a C library) is responsible for exposing these vendor-specific intrinsics that typically correspond to a single machine instruction.
 \begin{verbatim}
 /// Simple program squares elements in 16 bit chunks.
@@ -58,7 +58,7 @@ fn main() {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:orga7ce587}]{Importance}
+\begin{frame}[label={sec:org47d7ba3}]{Importance}
 Rust has been finding popular use in new security-critical and performance-sensitive projects, and SIMD vector intrinsics are often used for performance/efficiency in such projects.
 \begin{itemize}
 \item Dalek: Elliptic Curve Cryptography
@@ -67,21 +67,21 @@ Rust has been finding popular use in new security-critical and performance-sensi
 \end{itemize}
 \end{frame}
 \section{A Developer's Tale}
-\label{sec:org97ac972}
-\begin{frame}[label={sec:org3bbc6fa}]{Rust Docs}
+\label{sec:org0c5cb03}
+\begin{frame}[label={sec:orgf566d0c}]{Rust Docs}
 Let us imagine ourselves as a Rust developer looking through these intrinsics. Let us say we want to understand the intrinsic "vabdq\_s8", in core::arch::aarch64, used for performing an absolute difference. \pause Since we are Rust developers, our first instinct is to look at the Rust docs. A quick google search leads us to this. \pause
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{./vabdq.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org3c99b65}]{ARM Docs}
+\begin{frame}[label={sec:orge3395bd}]{ARM Docs}
 Not a great start. The Rust documentation barely explains anything, all it does is link to the ARM documentation. But atleast the ARM docs are nice! There is some pseudocode to accompany it too. \pause
 \begin{block}{Documentation String}
 Signed Absolute Difference. This instruction \alert{subtracts} the elements of the vector of \alert{the second source} SIMD\&FP register \alert{from the} corresponding elements of the \alert{first source} SIMD\&FP register, places the \alert{absolute values of the results} into a vector, and writes the vector to the \alert{destination} SIMD\&FP register.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org87c4b59},fragile]{panic!()}
+\begin{frame}[label={sec:org4b12621},fragile]{panic!()}
  Everything seems fine, but when we run the tests, they \alert{fail}! \pause After hours of debugging, in what feels like a miracle, we find the issue. \pause
 \begin{verbatim}
 use core::arch::aarch64::*;
@@ -99,7 +99,7 @@ fn main() {
 }
 \end{verbatim}
 \end{frame}
-\begin{frame}[label={sec:org3f63b64},fragile]{A Bug in the Rust Source????}
+\begin{frame}[label={sec:orgbdd41a7},fragile]{A Bug in the Rust Source????}
  \pause
 
 \begin{verbatim}
@@ -117,7 +117,7 @@ pub fn vabdq_s8(a: int8x16_t, b: int8x16_t) -> int8x16_t {
 \pause
 The Rust code seems to use FFI to make a call using LLVM IR! So there's no way the Rust Source is wrong. \pause Frustrated with the hours we spent on this, we sit back and sigh, being done for the day.
 \end{frame}
-\begin{frame}[label={sec:org782c082}]{The Moral of the Story}
+\begin{frame}[label={sec:orgc7e5229}]{The Moral of the Story}
 Essentially, bad documentation means that even the best Rust programmers need to wade through Intel or ARM assembly documentation (and more!) to understand these intrinsics. \pause This is especially bad for us verifiers! \pause
 \begin{itemize}
 \item HACL-STAR (F*)
@@ -126,14 +126,14 @@ Essentially, bad documentation means that even the best Rust programmers need to
 \end{itemize}
 \end{frame}
 \section{Our Solution}
-\label{sec:org0ada1e8}
-\begin{frame}[label={sec:org1ea7988}]{The Problem}
+\label{sec:org0a0717d}
+\begin{frame}[label={sec:orgb7cc308}]{The Problem}
 Challenge \#15 of the \href{https://model-checking.github.io/verify-rust-std/challenges/0015-intrinsics-simd.html}{Verify Rust Std} puts forth this issue. The problem statement reads as follows: \pause
 \begin{block}{Challenge 15}
 Consequently, we believe there is a strong need for a \alert{consistent, formal, testable} specification of the SIMD intrinsics that can aid Rust developers. Furthermore, we believe that \alert{this specification should written in a way that can be used to aid formal verification of Rust programs using various proof assistants}.
 \end{block}
 \end{frame}
-\begin{frame}[label={sec:org81308d8}]{Rewrite it .. in Rust!}
+\begin{frame}[label={sec:org4a6783f}]{Rewrite it .. in Rust!}
 \pause
 Our solution involves writing the models of the intrinsics as \alert{pure, functional Rust code} that matches the input/output behaviour of the intrinsics. This comes with a few benefits.\pause
 \begin{itemize}
@@ -142,7 +142,7 @@ Our solution involves writing the models of the intrinsics as \alert{pure, funct
 \item It allows us to easily test our models against the actual intrinsics. \pause
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org387d2d2}]{Model Generation}
+\begin{frame}[label={sec:orge995e21}]{Model Generation}
 Modelling by hand is not \alert{scalable}. \pause Fortunately, we can use the Rust core itself! \pause Within the Rust core, we (essentially) find 3 kinds of intrinsics.
 \begin{itemize}
 \item Built-in
@@ -150,17 +150,17 @@ Modelling by hand is not \alert{scalable}. \pause Fortunately, we can use the Ru
 \item Defined
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgea23ae9}]{Built-In Intrinsics}
+\begin{frame}[label={sec:org1a7c11a}]{Built-In Intrinsics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./simd.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org9336d2e}]{External Intrinsics}
+\begin{frame}[label={sec:orgd1e8cc8}]{External Intrinsics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./extern.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgcce27d7}]{Defined Intrinsics}
+\begin{frame}[label={sec:org401ff03}]{Defined Intrinsics}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./defined1.png}
 \end{center}
@@ -169,7 +169,7 @@ Modelling by hand is not \alert{scalable}. \pause Fortunately, we can use the Ru
 \includegraphics[width=.9\linewidth]{./defined2.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org214d683}]{Hand-Written Models: Built-In}
+\begin{frame}[label={sec:org35aec9f}]{Hand-Written Models: Built-In}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./insert.png}
 \end{center}
@@ -180,12 +180,12 @@ Modelling by hand is not \alert{scalable}. \pause Fortunately, we can use the Ru
 \includegraphics[width=.9\linewidth]{./add.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org79f7c78}]{Hand-Written Models: External}
+\begin{frame}[label={sec:org2884e22}]{Hand-Written Models: External}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./handwritten.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:orgee6c61e}]{Generated Models: Defined}
+\begin{frame}[label={sec:org3b420a4}]{Generated Models: Defined}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./gen1.png}
 \end{center}
@@ -193,24 +193,24 @@ Modelling by hand is not \alert{scalable}. \pause Fortunately, we can use the Ru
 \includegraphics[width=.9\linewidth]{./gen2.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org3ab7ad7}]{Testing!}
+\begin{frame}[label={sec:orgc1182df}]{Testing!}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./tests.png}
 \end{center}
 \end{frame}
 \section{Results}
-\label{sec:orge99161e}
-\begin{frame}[label={sec:org9be5a94}]{Acceptance of Solution by AWS}
+\label{sec:org8f14383}
+\begin{frame}[label={sec:orgd2f5355}]{Acceptance of Solution by AWS}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./aws.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org2662179}]{Finding a Bug in Rust}
+\begin{frame}[label={sec:orge8963de}]{Finding a Bug in Rust}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./pr.png}
 \end{center}
 \end{frame}
-\begin{frame}[label={sec:org66eea51}]{Future Work}
+\begin{frame}[label={sec:org33be799}]{Future Work}
 This work has also already been used for formal verification purposes in the \alert{libcrux} repository! \pause For future work, we would like to work on the following things. \pause
 \begin{itemize}
 \item Currently, we only have models for intrinsics that operate on integers. We would like to extend our approach to \alert{floating point numbers}. \pause
@@ -218,7 +218,7 @@ This work has also already been used for formal verification purposes in the \al
 \item Our methodology efficiently models Rust intrinsics, but \alert{does not discover bugs}.
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org233e38a}]{Concluding}
+\begin{frame}[label={sec:orgd4e7e35}]{Concluding}
 That is all. Thank you for coming to my talk! I hope it was somewhat informative.
 If you want to get in contact with CRYSPEN, you can do so via the \href{https://cryspen.com/}{website}.
 You can find the content of this talk at \href{https://github.com/satiscugcat/fsttcs-presentations}{satiscugcat/fsttcs-presentations}.
