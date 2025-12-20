@@ -162,9 +162,9 @@
    + Our methodology efficiently models Rust intrinsics, but *does not discover bugs*.
 ** Concluding
    That is all. Thank you for coming to my talk! I hope it was somewhat informative.
-   If you want to get in contact with CRYSPEN, you can do so via the [[https://cryspen.com/][website]].
-   You can find the content of this talk at [[https://github.com/satiscugcat/fsttcs-presentations][satiscugcat/fsttcs-presentations]].
-   Finally, at IIT Gandhinagar, I am organising a student group gor PL work called *,\\ AMBDA.*  If that sounds interesting to you and you want to be involved/collaborate, please do reach out!
+   If you want to get in contact with CRYSPEN, you can do so via the *[[https://cryspen.com/][website]]*.
+   You can find the content of this talk at *[[https://github.com/satiscugcat/fsttcs-presentations][satiscugcat/fsttcs-presentations]]*.
+   Finally, at IIT Gandhinagar, I am organising a student group gor PL work called *,\\ AMBDA.*  If that sounds interesting to you and you want to be involved/collaborate, please do reach out! My email is *[[mailto:aniket.mishra@iitgn.ac.in][aniket.mishra@iitgn.ac.in]]*.
 
 
    
