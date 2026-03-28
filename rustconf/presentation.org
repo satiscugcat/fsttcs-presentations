@@ -101,9 +101,6 @@
 ** The Moral of the Story
 
    Essentially, bad documentation means that even the best Rust programmers need to wade through Intel or ARM assembly documentation (and more!) to understand these intrinsics. \pause This especially hampers *Formal Verification!*
-   + HACL-STAR (F*)
-   + Jasmin (Easy Crypt)
-   + s2n-bignum (HOL Light)
    
 ** Formal Verification
    Formal Verification involves building mathematical models of programs, and implementing and verifying these approach using software. \pause Projects that employ formal verification include:
